@@ -227,7 +227,7 @@ class Script(scripts.Script):
         self.infotext_fields = []
         self.paste_field_names = []
         controls = ()
-        max_models = shared.opts.data.get("control_net_max_models_num", 1)
+        max_models = shared.opts.data.get("control_net_max_models_num", 3)
         elem_id_tabname = ("img2img" if is_img2img else "txt2img") + "_controlnet"
         with gr.Group(elem_id=elem_id_tabname):
             with gr.Accordion(f"ControlNet {controlnet_version.version_flag}", open = False, elem_id="controlnet"):
@@ -235,7 +235,7 @@ class Script(scripts.Script):
                     with gr.Tabs(elem_id=f"{elem_id_tabname}_tabs"):
                         for i in range(max_models):
                             with gr.Tab(f"ControlNet Unit {i}", 
-                                        elem_classes=['cnet-unit-tab']):
+                                        elem_classes=['cnet-unit-tab']): 
                                 controls += (self.uigroup(f"ControlNet-{i}", is_img2img, elem_id_tabname),)
                 else:
                     with gr.Column():

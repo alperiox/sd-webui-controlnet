@@ -55,6 +55,16 @@ def pil2cv(image):
   return new_image
 
 
+def save_mp4(path, image_list, name, duration, fps):
+    h, w = image_list[0].shape[:-1]
+    size = w, h
+    out = cv2.VideoWriter('/content/output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (size[1], size[0]), False)
+    for _ in range(fps * duration):
+        data = image_list(_)
+        out.write(data)
+    out.release()
+
+
 def save_gif(path, image_list, name, duration):
     tmp_dir = path + "/tmp/" 
     if os.path.isdir(tmp_dir):
@@ -72,7 +82,7 @@ class Script(scripts.Script):
     
     def title(self):
         return "controlnet m2m"
-
+ 
     def show(self, is_img2img):
         return True
 
@@ -83,11 +93,11 @@ class Script(scripts.Script):
         # The returned values are passed to the run method as parameters.
         
         ctrls_group = ()
-        max_models = opts.data.get("control_net_max_models_num", 1)
+        max_models = opts.data.get("control_net_max_models_num", 3)
 
         with gr.Group():
             with gr.Accordion("ControlNet-M2M", open = False):
-                duration = gr.Slider(label=f"Duration", value=50.0, minimum=10.0, maximum=200.0, step=10, interactive=True, elem_id='controlnet_movie2movie_duration_slider')
+                duration = gr.Slider(label=f"Duration", value=5.0, minimum=2.0, maximum=200.0, step=2, interactive=True, elem_id='controlnet_movie2movie_duration_slider')
                 with gr.Tabs():
                     for i in range(max_models):
                         with gr.Tab(f"ControlNet-{i}"):
@@ -160,7 +170,7 @@ class Script(scripts.Script):
 
             seq = images.get_next_sequence_number(f"{p.outpath_samples}{_BASEDIR}", "")
             filename = f"{seq:05}-{proc.seed}-{_BASEFILE}"
-            save_gif(p.outpath_samples, output_image_list, filename, duration)
+            save_mp4(p.outpath_samples, output_image_list, filename, duration, frame_num)
             proc.images = [f"{p.outpath_samples}{_BASEDIR}/{filename}.gif"]
 
 
